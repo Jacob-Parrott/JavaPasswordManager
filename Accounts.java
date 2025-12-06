@@ -2,20 +2,20 @@ import java.util.Scanner;
 
 public class Accounts {
     Scanner ui = new Scanner(System.in);
-    private String catagory, username, password, name;
-    public Accounts(String name, String username, String password,String catagory){
-        this.catagory = catagory;
+    private String category, username, password, name;
+    public Accounts(String name, String username, String password,String category){
+        this.category = category;
         this.username = username;
         this.password = password;
         this.name = name;
     }
 
 
-    public String getCatagory(){
-        return this.catagory;
+    public String getCategory(){
+        return this.category;
     }
-    public void setCatagory(String newCatagory){
-        this.catagory = newCatagory;
+    public void setCategory(String newCategory){
+        this.category = newCategory;
     }
 
     public String getUsername(){
@@ -49,7 +49,7 @@ public class Accounts {
         out += "\nAccount: "+ this.name +"\n";
         out += "Username: "+ this.username +"\n";
         out += "Password: "+ this.password +"\n";
-        out += "Catagory: "+ this.catagory +"\n";
+        out += "Category: "+ this.category +"\n";
         out += "---------------------------------";
         return out;
     }    

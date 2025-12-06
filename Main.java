@@ -9,13 +9,12 @@ public class Main{
 
     public static void main(String[] args){
 
-        Accounts a1 = new Accounts("Admin", "Admin","password","Admin");
+        Accounts a1 = new Accounts("Admin", "Admin","Password123!","Admin");
 
         ArrayList<Accounts> manager = new ArrayList<>();
         manager.add(a1);
 
         //Authentication (Ethan)
-
 
         System.out.println("--- Welcome to the Password Manager ---\n");
 
@@ -37,21 +36,23 @@ public class Main{
 
             switch (choice) {
                 case 1:
-                // adding (Ryland)
-                addAcount(manager);
+                // Adding accounts
+                    addAccount(manager);
                     break;
                 case 2:
-                // deleting (Ryland)
-                removeAccount(manager);
+                // Deleting accounts
+                    removeAccount(manager);
                     break;
                 case 3:
-                //showing all (Jacob)
+                // Showing all user accounts
+                    showAllAccounts(manager);
                     break;
                 case 4:
-                //showing one (Ethan)
+                // Showing one user account
                     break;
                 case 5:
-                // modifying (Jacob)
+                // Modifying accounts
+                    modifyAccount(manager);
                     break;
                 case 6:
                     running = false;
@@ -72,7 +73,7 @@ public class Main{
 
     }
 
-    private static void addAcount(ArrayList<Accounts> manager){
+    private static void addAccount(ArrayList<Accounts> manager){
         Scanner in = new Scanner(System.in);
 
         System.out.println("what is your name?");
@@ -81,27 +82,27 @@ public class Main{
         String username = in.nextLine();
         System.out.println("what will your password be? (must have 1 letter and special char and must be 8 characters long)");
         String password = makePassword();
-        System.out.println("What catagory will your account fall into?");
-        String catagory = in.nextLine();
-        Accounts newAccount = new Accounts(name,username,password,catagory);
+        System.out.println("What category will your account fall into?");
+        String category = in.nextLine();
+        Accounts newAccount = new Accounts(name,username,password,category);
         manager.add(newAccount);
     }
 
 
     public static String makePassword(){
         Scanner in = new Scanner(System.in);
-        //ai on checking for special chars and numbers in string
+        //AI on checking for special chars and numbers in string
 
-        List<Character> specialchar = Arrays.asList('!','@','#','$','^','&','*',')','(','<','>','/');
+        List<Character> characterList = Arrays.asList('!','@','#','$','^','&','*',')','(','<','>','/');
             
         List<Character> numbers = Arrays.asList('1','2','3','4','5','6','7','8','9','0');
 
         String password = "";
         boolean good = false;
-        while (good == false) {
+        while (!good) {
             password = in.nextLine();
-            if (!(password.length()>8 || containsAnyChar(password, numbers) || containsAnyChar(password, specialchar))) {
-                System.out.println("Error your password dosent meet the requierments try again, it needs:\n 1. 8 characters\n2. 1 of both special characters and numbers");
+            if (!(password.length()>8 || containsAnyChar(password, numbers) || containsAnyChar(password, characterList))) {
+                System.out.println("Error: Your password doesn't meet the requirements try again, it needs:\n 1. 8 characters\n2. 1 of both special characters and numbers");
             }
             else{
                 good = true;
@@ -111,7 +112,7 @@ public class Main{
         return password;
     }
 
-    //ai for password check by going through the selected list and checking if any of the list items are inside the string by useing a for loop and index
+    //AI for password check by going through the selected list and checking if any of the list items are inside the string by using a for loop and index
     public static boolean containsAnyChar(String text, List<Character> charsToCheck) {
         if (text == null || charsToCheck == null || charsToCheck.isEmpty()) {
             return false;
@@ -130,32 +131,72 @@ public class Main{
 
     
 
-    public static void removeAccount(ArrayList<Accounts> manager){
+    public static void removeAccount(ArrayList<Accounts> manager) {
         Scanner in = new Scanner(System.in);
         System.out.println();
         System.out.println("Which account do you want to delete?:");
 
-        //ai to show and get each account username and catagory
+        //AI to show and get each account username and category
 
-        for(Accounts accounts: manager){
-            System.out.println("Username: "+accounts.getUsername() + " Catagory: " + accounts.getCatagory());
+        for (Accounts accounts : manager) {
+            System.out.println("Username: " + accounts.getUsername() + " Category: " + accounts.getCategory());
         }
-        System.out.println("Select your choice by Username then catagory (enter seperatly)");
-        String delname = in.nextLine();
-        String delcatag = in.nextLine();
-        // chat gpt for selecting the targeted items and deleting the object that contains those items by for loop to check all of them and delete the one that contains both variables
-        // uses iterator to avoid a concurrent modifications execption     
-        for(Iterator<Accounts> iterator = manager.iterator(); iterator.hasNext();){
+        System.out.println("Select your choice by Username then category (enter separately)");
+        String deletedName = in.nextLine();
+        String deletedCategory = in.nextLine();
+        // ChatGPT for selecting the targeted items and deleting the object that contains those items by for loop to check all of them and delete the one that contains both variables
+        // uses iterator to avoid a concurrent modifications execution
+        for (Iterator<Accounts> iterator = manager.iterator(); iterator.hasNext(); ) {
             Accounts a = iterator.next();
-            if (a.getCatagory().equals(delcatag) && a.getUsername().equals(delname)) {
+            if (a.getCategory().equals(deletedCategory) && a.getUsername().equals(deletedName)) {
                 iterator.remove();
                 break;
             }
-        }    
-
-
-
         }
+
+
+    }
+
+    public static void showAllAccounts(ArrayList<Accounts> manager) {
+        for (Accounts accounts : manager) {
+            System.out.println(accounts);
+        }
+    }
+
+    public static  void modifyAccount(ArrayList<Accounts> manager) {
+        Scanner in = new Scanner(System.in);
+        System.out.println();
+        System.out.println("Which account do you want to modify?:");
+
+        //AI to show and get each account username and category
+
+        for (Accounts accounts : manager) {
+            System.out.println("Username: " + accounts.getUsername() + " Category: " + accounts.getCategory());
+        }
+        System.out.println("Select your choice by Username then category (enter separately)");
+        String deletedName = in.nextLine();
+        String deletedCategory = in.nextLine();
+        // ChatGPT for selecting the targeted items and deleting the object that contains those items by for loop to check all of them and delete the one that contains both variables
+        // uses iterator to avoid a concurrent modifications execution
+        for (Accounts a : manager) {
+            if (a.getCategory().equals(deletedCategory) && a.getUsername().equals(deletedName)) {
+                System.out.println("What should the new name be? (Leave blank to keep unchanged)");
+                String newName = in.nextLine();
+                System.out.println("What should the new display name be? (Leave blank to keep unchanged)");
+                String newUsername = in.nextLine();
+                System.out.println("What should the new password be? (Changing the password is required)");
+                String newPassword = makePassword();
+                System.out.println("What should the new category be? (leave blank to keep unchanged)");
+                String newCategory = in.nextLine();
+
+                if (!newName.isBlank()) {a.setName(newName);}
+                if (!newUsername.isBlank()) {a.setUsername(newUsername);}
+                if (!newPassword.isBlank()) {a.setPassword(newPassword);}
+                if (!newCategory.isBlank()) {a.setCategory(newCategory);}
+                break;
+            }
+        }
+    }
 
 
     }
