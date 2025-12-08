@@ -1,22 +1,29 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 
 public class Main{
 
     public static void main(String[] args){
-
-        Accounts a1 = new Accounts("Admin", "Admin","Password123!","Admin");
-
         ArrayList<Accounts> manager = new ArrayList<>();
-        manager.add(a1);
-
         //Authentication (Ethan)
 
         System.out.println("--- Welcome to the Password Manager ---\n");
+
+        File passwordList = new File("passwords.csv");
+
+        if (passwordList.exists()){
+            try(BufferedReader reader = new BufferedReader(new FileReader(passwordList))){
+                String line;
+                while ((line = reader.readLine()) != null){
+                    String[] tokens = new String (Base64.getDecoder().decode(line), StandardCharsets.UTF_8).trim().split(",");
+                    manager.add(new Accounts(tokens[0], tokens[1], tokens[2], tokens[3]));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         Scanner in = new Scanner(System.in);
         boolean running = true;
@@ -63,14 +70,15 @@ public class Main{
             }
             System.out.println();
 
-    
-    
-    
-        
-    
     }
     in.close();
-
+        try (FileWriter writer = new FileWriter(passwordList)){
+            for (Accounts accounts : manager) {
+                writer.write(Base64.getEncoder().encodeToString((accounts.getName()+","+accounts.getUsername()+","+accounts.getPassword()+","+accounts.getCategory()).getBytes(StandardCharsets.UTF_8))+"\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void addAccount(ArrayList<Accounts> manager){
@@ -126,11 +134,6 @@ public class Main{
         return false; // No character from the list found
     }
 
-
-
-
-    
-
     public static void removeAccount(ArrayList<Accounts> manager) {
         Scanner in = new Scanner(System.in);
         System.out.println();
@@ -150,6 +153,7 @@ public class Main{
             Accounts a = iterator.next();
             if (a.getCategory().equals(deletedCategory) && a.getUsername().equals(deletedName)) {
                 iterator.remove();
+                System.out.println("Account Removed Successfully!");
                 break;
             }
         }
