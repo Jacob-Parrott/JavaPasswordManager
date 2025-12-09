@@ -6,10 +6,8 @@ import java.util.*;
 public class Main{
 
     public static void main(String[] args){
-        Accounts a1 = new Accounts("Admin", "Admin","Password123!","Admin");
-
         ArrayList<Accounts> manager = new ArrayList<>();
-        manager.add(a1);
+
 
         System.out.println("--- Welcome to the Password Manager ---\n");
 
