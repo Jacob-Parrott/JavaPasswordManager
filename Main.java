@@ -6,8 +6,35 @@ import java.util.*;
 public class Main{
 
     public static void main(String[] args){
+        Accounts a1 = new Accounts("Admin", "Admin","Password123!","Admin");
+
         ArrayList<Accounts> manager = new ArrayList<>();
-        //Authentication (Ethan)
+        manager.add(a1);
+
+        System.out.println("--- Welcome to the Password Manager ---\n");
+
+
+        Scanner startInput = new Scanner(System.in);
+        System.out.println("Do you want to (1) Login or (2) Register a new account?");
+        int firstChoice = startInput.nextInt();
+        startInput.nextLine();
+
+        if (firstChoice == 2) {
+            registerBeforeLogin(manager);
+        }
+
+
+        int attempts = 0;
+        while (!authenticate(manager)) {
+            attempts++;
+            if (attempts >= 3) {
+                System.out.println("Too many failed attempts. Program shutting down.");
+                System.exit(0);
+            }
+            System.out.println("Try again.\n");
+        }       
+        System.out.println("Login successful! Access granted.\n");
+
 
         System.out.println("--- Welcome to the Password Manager ---\n");
 
@@ -24,6 +51,8 @@ public class Main{
                 e.printStackTrace();
             }
         }
+
+
 
         Scanner in = new Scanner(System.in);
         boolean running = true;
@@ -70,8 +99,8 @@ public class Main{
             }
             System.out.println();
 
-    }
-    in.close();
+        }
+        in.close();
         try (FileWriter writer = new FileWriter(passwordList)){
             for (Accounts accounts : manager) {
                 writer.write(Base64.getEncoder().encodeToString((accounts.getName()+","+accounts.getUsername()+","+accounts.getPassword()+","+accounts.getCategory()).getBytes(StandardCharsets.UTF_8))+"\n");
@@ -80,6 +109,96 @@ public class Main{
             e.printStackTrace();
         }
     }
+
+
+
+
+public static void registerBeforeLogin(ArrayList<Accounts> manager) {
+    Scanner in = new Scanner(System.in);
+
+    System.out.println("\n--- Create an Account Before Login ---");
+
+    System.out.print("Enter your name: ");
+    String name = in.nextLine();
+
+    System.out.print("Choose a username: ");
+    String username = in.nextLine();
+
+    // Check if username exists
+    for (Accounts a : manager) {
+        if (a.getUsername().equals(username)) {
+            System.out.println("ERROR: That username already exists.");
+            return;
+        }
+    }
+
+    System.out.print("Choose a password: ");
+    String password = makePassword();
+
+    System.out.print("Enter category: ");
+    String category = in.nextLine();
+
+    Accounts newAcc = new Accounts(name, username, password, category);
+    manager.add(newAcc);
+
+    // Save to passwords.csv 
+    try (FileWriter writer = new FileWriter("passwords.csv", true)) {
+        writer.write(Base64.getEncoder().encodeToString(
+                (name + "," + username + "," + password + "," + category)
+                        .getBytes(StandardCharsets.UTF_8)
+        ) + "\n");
+    } catch (IOException e) {
+        System.out.println("Error saving new account.");
+    }
+
+    System.out.println("Account created! You may now log in.\n");
+}
+
+
+
+public static boolean authenticate(ArrayList<Accounts> manager) {
+    // Load Accounts from passwords.csv 
+    File passwordList = new File("passwords.csv");
+
+    ArrayList<Accounts> loginAccounts = new ArrayList<>();
+
+    if (passwordList.exists()) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(passwordList))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String decoded = new String(Base64.getDecoder().decode(line), StandardCharsets.UTF_8);
+                String[] tokens = decoded.trim().split(",");
+                loginAccounts.add(new Accounts(tokens[0], tokens[1], tokens[2], tokens[3]));
+            }
+        } catch (IOException e) {
+            System.out.println("ERROR: Could not read authentication data.");
+            return false;
+        }
+    }
+
+    Scanner in = new Scanner(System.in);
+
+    System.out.print("Login Username: ");
+    String username = in.nextLine();
+
+    System.out.print("Login Password: ");
+    String password = in.nextLine();
+
+
+    for (Accounts a : loginAccounts) {
+        if (a.getUsername().equals(username) && a.getPassword().equals(password)) {
+            System.out.println("\nWelcome, " + a.getName() + "!\n");
+            return true;
+        }
+    }
+
+    System.out.println("\nERROR: Incorrect username or password.\n");
+    return false;
+}
+
+
+
+
 
     private static void addAccount(ArrayList<Accounts> manager){
         Scanner in = new Scanner(System.in);
@@ -120,7 +239,6 @@ public class Main{
         return password;
     }
 
-    //AI for password check by going through the selected list and checking if any of the list items are inside the string by using a for loop and index
     public static boolean containsAnyChar(String text, List<Character> charsToCheck) {
         if (text == null || charsToCheck == null || charsToCheck.isEmpty()) {
             return false;
@@ -139,16 +257,13 @@ public class Main{
         System.out.println();
         System.out.println("Which account do you want to delete?:");
 
-        //AI to show and get each account username and category
-
         for (Accounts accounts : manager) {
             System.out.println("Username: " + accounts.getUsername() + " Category: " + accounts.getCategory());
         }
         System.out.println("Select your choice by Username then category (enter separately)");
         String deletedName = in.nextLine();
         String deletedCategory = in.nextLine();
-        // ChatGPT for selecting the targeted items and deleting the object that contains those items by for loop to check all of them and delete the one that contains both variables
-        // uses iterator to avoid a concurrent modifications execution
+
         for (Iterator<Accounts> iterator = manager.iterator(); iterator.hasNext(); ) {
             Accounts a = iterator.next();
             if (a.getCategory().equals(deletedCategory) && a.getUsername().equals(deletedName)) {
@@ -157,8 +272,6 @@ public class Main{
                 break;
             }
         }
-
-
     }
 
     public static void showAllAccounts(ArrayList<Accounts> manager) {
@@ -172,16 +285,13 @@ public class Main{
         System.out.println();
         System.out.println("Which account do you want to modify?:");
 
-        //AI to show and get each account username and category
-
         for (Accounts accounts : manager) {
             System.out.println("Username: " + accounts.getUsername() + " Category: " + accounts.getCategory());
         }
         System.out.println("Select your choice by Username then category (enter separately)");
         String deletedName = in.nextLine();
         String deletedCategory = in.nextLine();
-        // ChatGPT for selecting the targeted items and deleting the object that contains those items by for loop to check all of them and delete the one that contains both variables
-        // uses iterator to avoid a concurrent modifications execution
+
         for (Accounts a : manager) {
             if (a.getCategory().equals(deletedCategory) && a.getUsername().equals(deletedName)) {
                 System.out.println("What should the new name be? (Leave blank to keep unchanged)");
@@ -203,5 +313,4 @@ public class Main{
     }
 
 
-    }
-
+}
