@@ -7,8 +7,6 @@ public class Main{
 
     public static void main(String[] args){
         ArrayList<Accounts> manager = new ArrayList<>();
-
-
         System.out.println("--- Welcome to the Password Manager ---\n");
 
         // ---------------------- ADDED REGISTRATION PROMPT ----------------------
