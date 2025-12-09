@@ -3,13 +3,25 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.io.BufferedReader;
+import java.io.FileReader;
+// ai for adding to a csv file
+import java.io.FileWriter;
+import java.io.IOException;
+
+
+
+
+
+
 
 
 public class Main{
 
+
     public static void main(String[] args){
 
-        Accounts a1 = new Accounts("Admin", "Admin","Password123!","Admin");
+        Accounts a1 = new Accounts("Admin","Password123!","Admin");
 
         ArrayList<Accounts> manager = new ArrayList<>();
         manager.add(a1);
@@ -37,11 +49,11 @@ public class Main{
             switch (choice) {
                 case 1:
                 // Adding accounts
-                    addAccount(manager);
+                    addAccount("Admin.csv"); // add a variable of the csv file
                     break;
                 case 2:
                 // Deleting accounts
-                    removeAccount(manager);
+                    removeAccount("Admin.csv");
                     break;
                 case 3:
                 // Showing all user accounts
@@ -73,20 +85,37 @@ public class Main{
 
     }
 
-    private static void addAccount(ArrayList<Accounts> manager){
+    private static void addAccount(String manager){
         Scanner in = new Scanner(System.in);
 
-        System.out.println("what is your name?");
-        String name = in.nextLine();
         System.out.println("what will your username be?");
         String username = in.nextLine();
         System.out.println("what will your password be? (must have 1 letter and special char and must be 8 characters long)");
         String password = makePassword();
         System.out.println("What category will your account fall into?");
         String category = in.nextLine();
-        Accounts newAccount = new Accounts(name,username,password,category);
-        manager.add(newAccount);
+        Accounts newAccount = new Accounts(username,password,category);
+        // modifications from Chat Gpt to know how to add a new line to the file by using filewriter as a way of modifying the file thanks to the file name ex: admin.csv
+        String newLine = newAccount.getUsername()+", "+newAccount.getPassword()+", "+newAccount.getCategory();
+
+        try(FileWriter writer = new FileWriter(manager, true)){
+        writer.append("\n").append(newLine);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+
+
+
+
+
     }
+
+
+
+
+
+
 
 
     public static String makePassword(){
@@ -131,28 +160,52 @@ public class Main{
 
     
 
-    public static void removeAccount(ArrayList<Accounts> manager) {
+    public static void removeAccount(String manager) {
         Scanner in = new Scanner(System.in);
+        ArrayList<String> lines = new ArrayList<>();
         System.out.println();
         System.out.println("Which account do you want to delete?:");
+        // chag gpt to grab each line from the csv file to show/remake by storing each line in a string array list
+        try (BufferedReader br = new BufferedReader(new FileReader("data.csv"))) {
+            String line;
 
-        //AI to show and get each account username and category
+            while ((line = br.readLine()) != null) {
+                lines.add(line); // add entire line as a single item
+            }
 
-        for (Accounts accounts : manager) {
-            System.out.println("Username: " + accounts.getUsername() + " Category: " + accounts.getCategory());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        for(String l: lines){
+            System.out.println(lines);
+        }
+
+
         System.out.println("Select your choice by Username then category (enter separately)");
         String deletedName = in.nextLine();
         String deletedCategory = in.nextLine();
-        // ChatGPT for selecting the targeted items and deleting the object that contains those items by for loop to check all of them and delete the one that contains both variables
-        // uses iterator to avoid a concurrent modifications execution
-        for (Iterator<Accounts> iterator = manager.iterator(); iterator.hasNext(); ) {
-            Accounts a = iterator.next();
-            if (a.getCategory().equals(deletedCategory) && a.getUsername().equals(deletedName)) {
-                iterator.remove();
-                break;
+
+        for(int i = 0; i<lines.size();i++){
+            if(lines[i].contains(deletedName) && lines[i].contains(deletedCategory)){
+                lines.remove(i);
+                //co piolet on rewriting the entire content of the file to remove the unwanted account by removing it from the new text before reinserting it into the csv
+                try(FileWriter writer = new FileWriter(manager,true)){
+                    for(String line:lines){
+                        writer.write(line);
+                        writer.write(System.lineSeparator());
+                    }
+                } catch(Exception e){
+                    System.out.print("error on deleting the item");
+                }
             }
         }
+
+
+        
+
+
+
+
 
 
     }
@@ -197,7 +250,6 @@ public class Main{
             }
         }
     }
-
 
     }
 

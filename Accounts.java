@@ -10,6 +10,11 @@ public class Accounts {
         this.name = name;
     }
 
+public Accounts(String username, String password,String category){
+        this.category = category;
+        this.username = username;
+        this.password = password;
+    }
 
     public String getCategory(){
         return this.category;
